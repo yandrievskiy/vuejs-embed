@@ -34,3 +34,11 @@
     padding: 15px 0;
   }
 }
+
+.filters {
+  display: flex;
+  min-height: 60px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px;
+}
