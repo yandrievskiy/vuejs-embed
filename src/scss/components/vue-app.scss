@@ -41,4 +41,19 @@
   align-items: center;
   justify-content: flex-end;
   padding: 10px;
+  margin-bottom: 40px;
+
+  &__wrapper {
+    display: flex;
+  }
+}
+
+.form-input {
+position: relative;
+  .error {
+    color: #f00;
+    position: absolute;
+    left: 0;
+    bottom: calc(-100% - 5px);
+  }
 }

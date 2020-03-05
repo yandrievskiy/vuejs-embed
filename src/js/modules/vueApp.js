@@ -5,18 +5,37 @@
 import data from './data';
 
 const vueApp = () => {
+
+  VeeValidate.extend('search', {
+    validate: value => {
+      const regex = new RegExp(`^[A-Za-z0-9?!.,"'\\s]*$`);
+      return regex.test(value);
+    },
+    message: 'This is not the magic word'
+  });
+
+
+  Vue.component('ValidationProvider', VeeValidate.ValidationProvider);
+
   if (Vue) {
     new Vue({
       el: '#app',
       template: `
       <div class="app-wrapper">
         <div class="filters">
-          <form>
-            <input type="text" name="search" v-model="search">
-            <select name="userId" v-model="selected">
-              <option v-for="author in authors">{{ author }}</option>
-            </select>
-            <button type="submit">Submit</button>
+          <form @submit="handleSubmit">
+            <div class="filters__wrapper">
+              <validation-provider ref="observer" v-slot="{ errors }" rules='search'>
+                <div class="form-input">
+                  <input type="text" name="search" v-model="search">
+                  <span class="error">{{ errors[0] }}</span>
+                </div>
+              </validation-provider>
+              <select name="userId" v-model="selected">
+                <option v-for="author in authors">{{ author }}</option>
+              </select>
+              <button type="submit">Submit</button>
+            </div>
           </form>
         </div>
         <div class="object-card-wrapper"><div class="object-card" v-for="object in filteredList">
@@ -40,7 +59,7 @@ const vueApp = () => {
         this.objects = data;
         this.handleUrlParams();
         this.selected = this.filter.get('userId');
-        this.search = this.filter.get('search');
+        this.search = this.filter.get('search') ? this.filter.get('search') : '';
       },
 
       methods: {
@@ -51,6 +70,12 @@ const vueApp = () => {
 
         handleSearch(item) {
           return item.title.indexOf(this.filter.get('search')) !== -1;
+        },
+
+        handleSubmit(e) {
+          if (this.$refs.observer.errors.length) {
+            e.preventDefault();
+          }
         },
 
         objectMatchesFilters(item) {
