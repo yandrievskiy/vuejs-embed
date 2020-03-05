@@ -56,7 +56,10 @@ const vueApp = () => {
       },
 
       mounted() {
-        this.objects = data;
+        fetch('https://jsonplaceholder.typicode.com/posts')
+        .then(response => response.json())
+        .then(json => this.objects = json);
+        // this.objects = data;
         this.handleUrlParams();
         this.selected = this.filter.get('userId');
         this.search = this.filter.get('search') ? this.filter.get('search') : '';
@@ -104,7 +107,7 @@ const vueApp = () => {
       computed: {
 
         list() {
-          return this.objects.filter((item) => item.status === 'published');
+          return this.objects.filter((item) => !item.status || item.status === 'published');
         },
 
         filteredList() {
