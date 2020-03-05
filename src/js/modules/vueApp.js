@@ -12,6 +12,7 @@ const vueApp = () => {
       <div class="app-wrapper">
         <div class="filters">
           <form>
+            <input type="text" name="search" v-model="search">
             <select name="userId" v-model="selected">
               <option v-for="author in authors">{{ author }}</option>
             </select>
@@ -30,6 +31,7 @@ const vueApp = () => {
           initMessage: 'VueJS Sucessfully Started',
           objects: [],
           selected: '',
+          search: '',
           filter: {},
         };
       },
@@ -38,16 +40,17 @@ const vueApp = () => {
         this.objects = data;
         this.handleUrlParams();
         this.selected = this.filter.get('userId');
-      },
-
-      created() {
-        this.handleUrlParams();
+        this.search = this.filter.get('search');
       },
 
       methods: {
 
         handleUrlParams() {
           this.filter = new URLSearchParams(window.location.search);
+        },
+
+        handleSearch(item) {
+          return item.title.indexOf(this.filter.get('search')) !== -1;
         },
 
         objectMatchesFilters(item) {
@@ -57,7 +60,11 @@ const vueApp = () => {
             const filterKey = filter[0];
             const filterValue = filter[1];
 
-            if (item[filterKey].toString() === filterValue) {
+            if (filterKey !== 'search' && item[filterKey].toString() === filterValue) {
+              paramsMatchFilters.push(filterKey);
+            }
+
+            if (filterKey === 'search' && this.handleSearch(item)) {
               paramsMatchFilters.push(filterKey);
             }
           }
